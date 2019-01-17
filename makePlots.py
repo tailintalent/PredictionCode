@@ -450,26 +450,26 @@ def plotBehaviorOrderedNeurons(dataSets, keyList, behaviors):
             xOrder = np.argsort(x)
             #plot sorted behavior
             ax = plt.Subplot(fig, inner_grid[0, bindex])
-            ax.plot(x[xOrder], color=colorBeh[beh])
+            ax.plot(np.array(list(x))[xOrder], color=colorBeh[beh])
             ax.set_xlim([0, len(xOrder)])
             ax.set_ylabel(beh)
             fig.add_subplot(ax)
             # find interesting locations:
-            ax.axvline(np.where(x[xOrder]>0)[0][0], color='k', lw=1, linestyle='--')
+            ax.axvline(np.where(np.array(list(x))[xOrder]>0)[0][0], color='k', lw=1, linestyle='--')
 #            if beh == 'AngleVelocity':
-#                ax.axvline(np.where(x[xOrder]>0)[0][0])
+#                ax.axvline(np.where(np.array(list(x))[xOrder]>0)[0][0])
 #            if beh=='Eigenworm3':
 #                ax.axvline(np.where(np.sort(x)<-10)[0][-1])
 #                ax.axvline(np.where(np.sort(x)>10)[0][0])
             ax.set_xticks([])
             #plot neural signal sorted
             ax2 = plt.Subplot(fig, inner_grid[1, bindex], sharex=ax)
-            plotHeatmap(np.arange(len(Y[0])), gaussian_filter(Y[:,xOrder], (1,5)), ax =ax2,vmin=-0.5, vmax=1)
+            plotHeatmap(np.arange(len(np.array(list(Y))[0])), gaussian_filter(np.array(list(Y))[:,xOrder], (1,5)), ax =ax2,vmin=-0.5, vmax=1)
             ax2.set_xlabel('Neural activity ordered by behavior')
             # find interesting locations:
-            ax2.axvline(np.where(x[xOrder]>0)[0][0], color='w', lw=1)
+            ax2.axvline(np.where(np.array(list(x))[xOrder]>0)[0][0], color='w', lw=1)
 #            if beh == 'AngleVelocity':
-#                ax2.axvline(np.where(x[xOrder]>0)[0][0], color='w', lw=0.5)
+#                ax2.axvline(np.where(np.array(list(x))[xOrder]>0)[0][0], color='w', lw=0.5)
 #            if beh=='Eigenworm3':
 #                ax2.axvline(np.where(np.sort(x)<-10)[0][-1], color='w', lw=0.5)
 #                ax2.axvline(np.where(np.sort(x)>10)[0][0], color='w', lw=0.5)
@@ -1025,7 +1025,7 @@ def plotSingleLinearFit(fig, gridloc, pars, results, data, splits, behaviors):
         if lindex==len(behaviors)-1:
             ax5.set_xlabel('True behavior')
         ax5.set_ylabel('Predicted')
-        ax5.scatter(y[testInd], yPred[testInd], alpha=0.05,s=5, color=colorPred[label])
+        ax5.scatter(np.array(list(y))[testInd], np.array(list(yPred))[testInd], alpha=0.05,s=5, color=colorPred[label])
         fig.add_subplot(ax5)
         # plot cumulative MSE of fits
         ax6 = plt.Subplot(fig, inner_grid[lindex, 4])

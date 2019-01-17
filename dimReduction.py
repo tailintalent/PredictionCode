@@ -1,3 +1,9 @@
+
+# coding: utf-8
+
+# In[ ]:
+
+
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 14 15:34:10 2017
@@ -29,6 +35,11 @@ from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 import makePlots as mp
 
 np.random.seed(13)
+
+
+# In[ ]:
+
+
 ###############################################    
 # 
 # create trainings and test sets
@@ -492,10 +503,10 @@ def discreteBehaviorPrediction(data, pars, splits):
     trainingsInd, testInd = splits[label]['Train'], splits[label]['Test']
     # create a linear SVC
     lin_clf = svm.LinearSVC(penalty='l1',dual=False, class_weight='balanced', C=10)
-    lin_clf.fit(X[trainingsInd], Y[trainingsInd]) 
+    lin_clf.fit(X[trainingsInd], np.array(list(Y))[trainingsInd]) 
     Ypred = lin_clf.predict(X[testInd])
     
-    print(classification_report(Y[testInd], Ypred))
+    print(classification_report(np.array(list(Y))[testInd], Ypred))
     pcs = lin_clf.coef_
     indices = np.argsort(pcs[0])
     
@@ -503,8 +514,8 @@ def discreteBehaviorPrediction(data, pars, splits):
     # show temporal components
     for wi, weights in enumerate(pcs):
         comp[wi] = np.dot(X, weights)
-    #print f1_score(Y[testInd], Ypred, average='micro')
-    recision, recall, fscore, support = precision_recall_fscore_support(Y[testInd], Ypred, labels=[-1,0,1,2])
+    #print f1_score(np.array(list(Y))[testInd], Ypred, average='micro')
+    recision, recall, fscore, support = precision_recall_fscore_support(np.array(list(Y))[testInd], Ypred, labels=[-1,0,1,2])
     print(fscore)
     pcares = {}
     pcares['nComp'] =  4
@@ -514,7 +525,7 @@ def discreteBehaviorPrediction(data, pars, splits):
     pcares['pcaComponents'] =  comp
     T = testInd
     ax1 = plt.subplot(211)
-    mp.plotEthogram(ax1, T, Y[testInd], alpha = 0.5, yValMax=1, yValMin=0, legend=0)
+    mp.plotEthogram(ax1, T, np.array(list(Y))[testInd], alpha = 0.5, yValMax=1, yValMin=0, legend=0)
     ax1 = plt.subplot(212)
     mp.plotEthogram(ax1, T, Ypred, alpha = 0.5, yValMax=1, yValMin=0, legend=0)
     return pcares
@@ -589,7 +600,7 @@ def runLinearModel(data, results, pars, splits, plot = False, behaviors = ['Angl
         reg = linear_model.LinearRegression()
         # setting alpha to zero makes this a linear model without regularization
         reg = linear_model.Lasso(alpha = results[fitmethod][label]['alpha'])
-        reg.fit(X[trainingsInd], Y[trainingsInd])
+        reg.fit(X[trainingsInd], np.array(list(Y))[trainingsInd])
 #        alphas = reg.alphas_
 #        ymean = np.mean(reg.mse_path_, axis =1)
 #        yerr = np.std(reg.mse_path_, axis =1)/np.sqrt(cv)
@@ -597,20 +608,20 @@ def runLinearModel(data, results, pars, splits, plot = False, behaviors = ['Angl
 #        # calculate standard deviation rule
 #        alphaNew = stdevRule(x = alphas, y= ymean, std= yerr)
 #        reg = linear_model.Lasso(alpha=alphaNew)
-#        reg.fit(X[trainingsInd], Y[trainingsInd])
+#        reg.fit(X[trainingsInd], np.array(list(Y))[trainingsInd])
         
         if plot:
             plt.subplot(221)
             plt.title('Trainingsset')
-            plt.plot(Y[trainingsInd], 'r')
+            plt.plot(np.array(list(Y))[trainingsInd], 'r')
             plt.plot(reg.predict(X[trainingsInd]), 'k', alpha=0.7)
             plt.subplot(222)
             plt.title('Testset')
-            plt.plot(Y[testInd], 'r')
+            plt.plot(np.array(list(Y))[testInd], 'r')
             plt.plot(reg.predict(X[testInd]), 'k', alpha=0.7)
             ax1 = plt.subplot(223)
             plt.title('Non-zero weighths: {}'.format(len(reg.coef_[reg.coef_!=0])))
-            ax1.scatter(Y[testInd], reg.predict(X[testInd]), alpha=0.7, s=0.2)
+            ax1.scatter(np.array(list(Y))[testInd], reg.predict(X[testInd]), alpha=0.7, s=0.2)
 #            hist, bins = np.histogram(reg.coef_, bins = 30, density = True)
 #            ax1.fill_between(bins[:-1],np.zeros(len(hist)), hist, step='post', color='r')
 #            ax1.set_xlabel(r'weights')
@@ -630,11 +641,11 @@ def runLinearModel(data, results, pars, splits, plot = False, behaviors = ['Angl
         weights = reg.coef_
         # score model
         if len(weights)>0:
-            scorepred = reg.score(X[testInd], Y[testInd])#, sample_weight=np.power(Y[testInd], 2))
-            score = reg.score(X[trainingsInd], Y[trainingsInd])
+            scorepred = reg.score(X[testInd], np.array(list(Y))[testInd])#, sample_weight=np.power(np.array(list(Y))[testInd], 2))
+            score = reg.score(X[trainingsInd], np.array(list(Y))[trainingsInd])
         else:
             scorepred = np.nan
-            score = reg.score(X[trainingsInd], Y[trainingsInd])
+            score = reg.score(X[trainingsInd], np.array(list(Y))[trainingsInd])
         linData[label] = {}
         linData[label]['weights'] =  weights
         linData[label]['fullweights'] =  weights
@@ -683,12 +694,12 @@ def runLassoLars(data, pars, splits, plot = False, behaviors = ['AngleVelocity',
         scale = True
         if scale:
             scalerX = preprocessing.StandardScaler().fit(X[trainingsInd])  
-            scalerY = preprocessing.StandardScaler().fit(Y[trainingsInd])  
+            scalerY = preprocessing.StandardScaler().fit(np.array(list(Y))[trainingsInd])  
             #scale data
             X = scalerX.transform(X)
             Y = scalerY.transform(Y)
         Xtrain, Xtest = X[trainingsInd],X[testInd]
-        Ytrain, Ytest = Y[trainingsInd],Y[testInd]
+        Ytrain, Ytest = np.array(list(Y))[trainingsInd],np.array(list(Y))[testInd]
         # fit lasso and validate
         #a = np.logspace(-2,2,100)
         cv = 10
@@ -700,13 +711,12 @@ def runLassoLars(data, pars, splits, plot = False, behaviors = ['AngleVelocity',
         else:
             a = np.logspace(-3,0,100)
         if label =='Eigenworm3':
-            fold = balancedFolds(Y[trainingsInd], nSets=cv)
+            fold = balancedFolds(np.array(list(Y))[trainingsInd], nSets=cv)
 ##        else:
-#        fold = balancedFolds(Y[trainingsInd], nSets=cv)
+#        fold = balancedFolds(np.array(list(Y))[trainingsInd], nSets=cv)
         fold = 5
         fold = TimeSeriesSplit(n_splits=5, max_train_size=None)
-        reg = linear_model.LassoLarsIC(criterion = 'bic',  verbose=0, \
-         max_iter=5000)#, eps=1e-2)#, normalize=False)
+        reg = linear_model.LassoLarsIC(criterion = 'bic',  verbose=0,          max_iter=5000)#, eps=1e-2)#, normalize=False)
         
         reg.fit(Xtrain, Ytrain)
         alphas= reg.alphas_
@@ -721,7 +731,7 @@ def runLassoLars(data, pars, splits, plot = False, behaviors = ['AngleVelocity',
 #        # calculate standard deviation rule
 #        alphaNew = stdevRule(x = alphas, y= ymean, std= yerr)
 #        reg = linear_model.Lasso(alpha=alphaNew)
-#        reg.fit(X[trainingsInd], Y[trainingsInd])
+#        reg.fit(X[trainingsInd], np.array(list(Y))[trainingsInd])
         
         if plot:
             plt.subplot(221)
@@ -730,7 +740,7 @@ def runLassoLars(data, pars, splits, plot = False, behaviors = ['AngleVelocity',
             plt.plot(reg.predict(Xtrain), 'k', alpha=0.7)
             plt.subplot(222)
             plt.title('Testset')
-            plt.plot(Y[testInd], 'r')
+            plt.plot(np.array(list(Y))[testInd], 'r')
             plt.plot(reg.predict(Xtest), 'k', alpha=0.7)
             ax1 = plt.subplot(223)
             plt.title('Non-zero weighths: {}'.format(len(reg.coef_[reg.coef_!=0])))
@@ -755,7 +765,7 @@ def runLassoLars(data, pars, splits, plot = False, behaviors = ['AngleVelocity',
         # score model
         if len(weights)>0:
             # normalize testset with scaler values
-            scorepred = reg.score(Xtest, Ytest)#, sample_weight=np.power(Y[testInd], 2))
+            scorepred = reg.score(Xtest, Ytest)#, sample_weight=np.power(np.array(list(Y))[testInd], 2))
             score = reg.score(Xtrain, Ytrain)
         else:
             scorepred = np.nan
@@ -833,12 +843,12 @@ def runLasso(data, pars, splits, plot = False, behaviors = ['AngleVelocity', 'Ei
         scale = False
         if scale:
             scalerX = preprocessing.StandardScaler().fit(X[trainingsInd])  
-            scalerY = preprocessing.StandardScaler().fit(Y[trainingsInd])  
+            scalerY = preprocessing.StandardScaler().fit(np.array(list(Y))[trainingsInd])  
             #scale data
             X = scalerX.transform(X)
             Y = scalerY.transform(Y)
         Xtrain, Xtest = X[trainingsInd],X[testInd]
-        Ytrain, Ytest = Y[trainingsInd],Y[testInd]
+        Ytrain, Ytest = np.array(list(Y))[trainingsInd],np.array(list(Y))[testInd]
         # fit lasso and validate
         #a = np.logspace(-2,2,100)
         #cv = 10
@@ -853,13 +863,12 @@ def runLasso(data, pars, splits, plot = False, behaviors = ['AngleVelocity', 'Ei
             nfold =5#%int(len(X)/500)
         
         #if label =='Eigenworm3':
-        #    nfold = balancedFolds(Y[trainingsInd], nSets=cv)
+        #    nfold = balancedFolds(np.array(list(Y))[trainingsInd], nSets=cv)
 ##        else:
-#        fold = balancedFolds(Y[trainingsInd], nSets=cv)
+#        fold = balancedFolds(np.array(list(Y))[trainingsInd], nSets=cv)
         #fold = 5
         fold = TimeSeriesSplit(n_splits=nfold, max_train_size=None)
-        reg = linear_model.LassoCV(cv=fold,  verbose=0, \
-         max_iter=10000, tol=1e-4)#, alphas = a)#, normalize=False)
+        reg = linear_model.LassoCV(cv=fold,  verbose=0,          max_iter=10000, tol=1e-4)#, alphas = a)#, normalize=False)
         
         reg.fit(Xtrain, Ytrain)
         alphas = reg.alphas_
@@ -869,7 +878,7 @@ def runLasso(data, pars, splits, plot = False, behaviors = ['AngleVelocity', 'Ei
 #        # calculate standard deviation rule
 #        alphaNew = stdevRule(x = alphas, y= ymean, std= yerr)
 #        reg = linear_model.Lasso(alpha=alphaNew)
-#        reg.fit(X[trainingsInd], Y[trainingsInd])
+#        reg.fit(X[trainingsInd], np.array(list(Y))[trainingsInd])
         
         if plot:
             plt.subplot(221)
@@ -878,7 +887,7 @@ def runLasso(data, pars, splits, plot = False, behaviors = ['AngleVelocity', 'Ei
             plt.plot(reg.predict(Xtrain), 'k', alpha=0.7)
             plt.subplot(222)
             plt.title('Testset')
-            plt.plot(Y[testInd], 'r')
+            plt.plot(np.array(list(Y))[testInd], 'r')
             plt.plot(reg.predict(Xtest), 'k', alpha=0.7)
             ax1 = plt.subplot(223)
             plt.title('Non-zero weighths: {}'.format(len(reg.coef_[reg.coef_!=0])))
@@ -903,7 +912,7 @@ def runLasso(data, pars, splits, plot = False, behaviors = ['AngleVelocity', 'Ei
         # score model
         if len(weights)>0:
             # normalize testset with scaler values
-            scorepred = reg.score(Xtest, Ytest)#, sample_weight=np.power(Y[testInd], 2))
+            scorepred = reg.score(Xtest, Ytest)#, sample_weight=np.power(np.array(list(Y))[testInd], 2))
             score = reg.score(Xtrain, Ytrain)
         else:
             scorepred = np.nan
@@ -960,26 +969,26 @@ def runElasticNet(data, pars, splits, plot = False, scramble = False, behaviors 
         scale = 1
         if scale:
             scalerX = preprocessing.StandardScaler().fit(X[trainingsInd])  
-            scalerY = preprocessing.StandardScaler().fit(Y[trainingsInd])  
+            scalerY = preprocessing.StandardScaler().fit(np.array(list(Y))[trainingsInd])  
             #scale data
             X = scalerX.transform(X)
             Y = scalerY.transform(Y)
         Xtrain, Xtest = X[trainingsInd],X[testInd]
-        Ytrain, Ytest = Y[trainingsInd],Y[testInd]
+        Ytrain, Ytest = np.array(list(Y))[trainingsInd],np.array(list(Y))[testInd]
         # fit elasticNet and validate
         
         if label =='Eigenworm3':
             l1_ratio = [0.99]
             #l1_ratio = [0.95]
             #fold =10
-            #fold = balancedFolds(Y[trainingsInd], nSets=cv)
+            #fold = balancedFolds(np.array(list(Y))[trainingsInd], nSets=cv)
             a = np.logspace(-2,-0.5,200)
             nfold = 5
             tol = 1e-10
         else:
             #l1_ratio = [0.5, 0.7, 0.8, .9, .95,.99, 1]
             l1_ratio = [0.99]
-            #fold = balancedFolds(Y[trainingsInd], nSets=cv)
+            #fold = balancedFolds(np.array(list(Y))[trainingsInd], nSets=cv)
             a = np.logspace(-4,-1,200)
             nfold = 5
             tol = 1e-10
@@ -1018,7 +1027,7 @@ def runElasticNet(data, pars, splits, plot = False, scramble = False, behaviors 
             plt.plot(reg.predict(Xtrain), 'k', alpha=0.7)
             plt.subplot(222)
             plt.title('Testset')
-            plt.plot(Y[testInd], 'r')
+            plt.plot(np.array(list(Y))[testInd], 'r')
             plt.plot(reg.predict(Xtest), 'k', alpha=0.7)
             ax1 = plt.subplot(223)
             plt.title('Non-zero weighths: {}'.format(len(reg.coef_[reg.coef_!=0])))
@@ -1395,3 +1404,4 @@ def predictBehaviorFromPCA(data,  splits, pars, behaviors):
 #        linData[label]['r2PCSx'] = range(1, Neuro.shape[1], 1)
         
     return linData
+

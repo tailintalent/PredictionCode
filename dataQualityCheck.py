@@ -84,7 +84,7 @@ behaviors = ['AngleVelocity','Eigenworm3']
 #
 ##############################################
 createIndicesTest = 1#True 
-overview = 0#False
+overview = 1#False
 predNeur = 0
 predPCA = 0
 bta = 0
@@ -100,7 +100,7 @@ lasso = 0
 elasticnet = 1#True
 lagregression = 0
 positionweights = 0#True
-resultsPredictionOverview = 0
+resultsPredictionOverview = 1
 transient = 0
 ###############################################    
 # 
@@ -131,6 +131,10 @@ if createIndicesTest:
 
     print("Done generating trainingsets")
 
+
+# In[ ]:
+
+
 ###############################################    
 # 
 # some generic data checking plots
@@ -151,7 +155,11 @@ if overview:
     #mp.plotNeurons3D(dataSets, keyList, threed = False)  
     #mp.plotExampleCenterlines(dataSets, keyList, folder)
     plt.show() 
-    
+
+
+# In[ ]:
+
+
 ###############################################    
 # 
 # predict neural dynamics from behavior
@@ -426,6 +434,11 @@ if positionweights:
         
     mp.plotWeightLocations(dataSets, resultDict, keyList, fitmethod='ElasticNet')
     plt.show()
+
+
+# In[ ]:
+
+
 #%%
 ###############################################    
 # 

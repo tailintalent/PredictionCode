@@ -1,4 +1,9 @@
 
+# coding: utf-8
+
+# In[1]:
+
+
 # standard modules
 import matplotlib as mpl
 import numpy as np
@@ -8,7 +13,11 @@ import h5py
 import dataHandler as dh
 import makePlots as mp
 import dimReduction as dr
-#
+
+
+# In[ ]:
+
+
 mpl.rcParams['interactive']  = False
 ###############################################    
 # 
@@ -36,11 +45,12 @@ dataPars = {'medianWindow':50, # smooth eigenworms with gauss filter of that siz
             'interpolateNans': 6,#interpolate gaps smaller than this of nan values in calcium data
             }
 
-
-dataSets = dh.loadMultipleDatasets(dataLog, pathTemplate=folder, dataPars = dataPars, nDatasets = None)
-keyList = np.sort(dataSets.keys())
+filename = 'datasets/AML32_moving.hdf5'
+dataSets = h5py.File(filename, 'r')
+# dataSets = dh.loadMultipleDatasets(dataLog, pathTemplate=folder, dataPars = dataPars, nDatasets = None)
+keyList = np.sort(list(dataSets.keys()))
     
-print keyList
+print(keyList)
 keyList = keyList[0:3]
 # results dictionary 
 resultDict = {}
@@ -119,7 +129,7 @@ if createIndicesTest:
             resultDict[key]['Training'][label]['Test']=test
            
 
-    print "Done generating trainingsets"
+    print("Done generating trainingsets")
 
 ###############################################    
 # 
@@ -149,10 +159,9 @@ if overview:
 ##############################################
 if predPCA:
     for kindex, key in enumerate(keyList):
-        print 'predicting neural dynamics from behavior'
+        print('predicting neural dynamics from behavior')
         splits = resultDict[key]['Training']
-        resultDict[key]['PCAPred'] = dr.predictBehaviorFromPCA(dataSets[key], \
-                    splits, pars, behaviors)
+        resultDict[key]['PCAPred'] = dr.predictBehaviorFromPCA(dataSets[key],                     splits, pars, behaviors)
     
 ###############################################    
 # 
@@ -161,10 +170,9 @@ if predPCA:
 ##############################################
 if predNeur:
     for kindex, key in enumerate(keyList):
-        print 'predicting neural dynamics from behavior'
+        print('predicting neural dynamics from behavior')
         splits = resultDict[key]['Training']
-        resultDict[key]['RevPred'] = dr.predictNeuralDynamicsfromBehavior(dataSets[key], \
-                    splits, pars, useFullNeurons=False)
+        resultDict[key]['RevPred'] = dr.predictNeuralDynamicsfromBehavior(dataSets[key],                     splits, pars, useFullNeurons=False)
         mp.plotNeuronPredictedFromBehavior(resultDict[key], dataSets[key])
         plt.show()
 ###############################################    
@@ -174,7 +182,7 @@ if predNeur:
 ##############################################
 if hierclust:
     for kindex, key in enumerate(keyList):
-        print 'running clustering'
+        print('running clustering')
         resultDict[key]['clust'] = dr.runHierarchicalClustering(dataSets[key], pars)
         
 ###############################################    
@@ -183,7 +191,7 @@ if hierclust:
 #
 ##############################################
 if periodogram:
-    print 'running periodogram(s)'
+    print('running periodogram(s)')
     for kindex, key in enumerate(keyList):
         resultDict[key]['Period'] = dr.runPeriodogram(dataSets[key], pars, testset = None)       
 ###############################################    
@@ -193,7 +201,7 @@ if periodogram:
 ##############################################
 if bta:
     for kindex, key in enumerate(keyList):
-        print 'running BTA'
+        print('running BTA')
         resultDict[key]['BTA'] =dr.runBehaviorTriggeredAverage(dataSets[key], pars)
     mp.plotPCAresults(dataSets, resultDict, keyList, pars,  flag = 'BTA')
     plt.show()
@@ -206,7 +214,7 @@ if bta:
 ##############################################
 if svm:
     for kindex, key in enumerate(keyList):
-        print 'running SVM'
+        print('running SVM')
         splits = resultDict[key]['Training']
         resultDict[key]['SVM'] = dr.discreteBehaviorPrediction(dataSets[key], pars, splits )
     
@@ -231,7 +239,7 @@ if svm:
 ##############################################
 #%%
 if pca:
-    print 'running PCA'
+    print('running PCA')
     for kindex, key in enumerate(keyList):
         resultDict[key]['PCA'] = dr.runPCANormal(dataSets[key], pars)
 
@@ -261,7 +269,7 @@ if pca:
 ##############################################
 #%%
 if kato_pca:
-    print 'running Kato et. al PCA'
+    print('running Kato et. al PCA')
     for kindex, key in enumerate(keyList):
         resultDict[key]['katoPCA'] = dr.runPCANormal(dataSets[key], pars, deriv = True)
     
@@ -282,7 +290,7 @@ if kato_pca:
 ##############################################
 #%%
 if half_pca:
-    print 'half-split PCA'
+    print('half-split PCA')
     for kindex, key in enumerate(keyList):
         # run PCA on each half
         splits = resultDict[key]['Training']
@@ -327,9 +335,9 @@ if linreg:
 #
 ##############################################
 if lasso:
-    print "Performing LASSO.",
+    print("Performing LASSO.",)
     for kindex, key in enumerate(keyList):
-        print key
+        print(key)
         splits = resultDict[key]['Training']
         resultDict[key]['LASSO'] = dr.runLasso(dataSets[key], pars, splits, plot=1, behaviors = behaviors)
         # calculate how much more neurons contribute
@@ -364,7 +372,7 @@ if lasso:
 ##############################################
 if elasticnet:
     for kindex, key in enumerate(keyList):
-        print 'Running Elastic Net',  key
+        print('Running Elastic Net',  key)
         splits = resultDict[key]['Training']
         resultDict[key]['ElasticNet'] = dr.runElasticNet(dataSets[key], pars,splits, plot=1, behaviors = behaviors)
         # calculate how much more neurons contribute
@@ -389,7 +397,7 @@ if elasticnet:
 ##############################################
 if lagregression:
     for kindex, key in enumerate(keyList):
-        print 'Running lag calculation',  key
+        print('Running lag calculation',  key)
         splits = resultDict[key]['Training']
         #resultDict[key]['LagLASSO'] = dr.timelagRegression(dataSets[key], pars, splits, plot = False, behaviors = ['AngleVelocity', 'Eigenworm3'], lags = np.arange(-18,19, 3))
         resultDict[key]['LagEN'] = dr.timelagRegression(dataSets[key], pars, splits, plot = False, behaviors = ['AngleVelocity', 'Eigenworm3'], lags = np.arange(-18,19, 3), flag='ElasticNet')
@@ -401,7 +409,7 @@ if lagregression:
 ##############################################
 if nestedvalidation:
     for kindex, key in enumerate(keyList):
-        print 'Running nested validation',  key
+        print('Running nested validation',  key)
         splits = resultDict[key]['Training']
         resultDict[key]['nestedLASSO'] = dr.NestedRegression(dataSets[key], pars, splits, plot = False, behaviors = ['AngleVelocity', 'Eigenworm3'], flag = 'LASSO')    
 
@@ -414,7 +422,7 @@ if nestedvalidation:
 ##############################################
 if positionweights:
     for kindex, key in enumerate(keyList):
-        print 'plotting linear model weights on positions',  key
+        print('plotting linear model weights on positions',  key)
         
     mp.plotWeightLocations(dataSets, resultDict, keyList, fitmethod='ElasticNet')
     plt.show()
@@ -440,3 +448,4 @@ if resultsPredictionOverview:
     plt.scatter(np.ones(len(noNeur[:,0]))+1.5, noNeur[:,1])
     plt.xticks([1,2], ['velocity', 'Turns'])
     plt.show()
+

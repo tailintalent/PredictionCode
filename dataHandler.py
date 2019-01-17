@@ -168,9 +168,9 @@ def estimateEigenwormError(folder, eigenworms, show=False):
     This will be wrong or meaningless if the centerlines were copied between frames."""
     # calculate centerline projections for full movie
     clFull, clIndices = loadCenterlines(folder, full = True)
-    print 'done loading'
+    print('done loading')
     pcsFull, meanAngle, lengths, refPoint = calculateEigenwormsFromCL(clFull, eigenworms)
-    print 'done projecting'
+    print('done projecting')
     # split array by indices into blocks corresponding to volumes
     pcsSplit = np.split(pcsFull, clIndices, axis=1)
     # calculate standard deviation and mean
@@ -351,11 +351,11 @@ def preprocessNeuralData(R, G, dataPars):
 
 def loadData(folder, dataPars, ew=1):
     """load matlab data."""
-    print 'Loading ', folder
+    print('Loading ', folder)
     try:
         data = scipy.io.loadmat(os.path.join(folder,'heatDataMS.mat'))
     except IOError:
-        print 'IOERROR'
+        print('IOERROR')
         data = scipy.io.loadmat(os.path.join(folder,'heatData.mat'))
     # unpack behavior variables
     ethoOrig, xPos, yPos, vel, pc12, pc3 = data['behavior'][0][0].T
@@ -410,7 +410,7 @@ def loadData(folder, dataPars, ew=1):
     nanmask = np.array(nanmask)[:,:Y.shape[1]]
     if 'flagged_volumes' in data.keys():
         if len(data['flagged_volumes'])>0:
-            print data['flagged_volumes']
+            print(data['flagged_volumes'])
             nanmask[:,np.array(data['flagged_volumes'][0])] = np.nan
     Rfull = np.copy(Y)
     Rfull[np.isnan(nanmask)] =np.nan
@@ -438,7 +438,7 @@ def loadData(folder, dataPars, ew=1):
         neuroPos = data['XYZcoord'][order].T
     except KeyError:
         neuroPos = []
-        print 'No neuron positions:', folder
+        print('No neuron positions:', folder)
     
     
     # create a dictionary structure of these data
@@ -447,7 +447,7 @@ def loadData(folder, dataPars, ew=1):
     dataDict['CL'] = cl[nonNan]
     dataDict['goodVolumes'] = nonNan
     dataDict['Behavior'] = {}
-    print RM.shape
+    print(RM.shape)
     tmpData = [vel[:,0], pc1, pc2, pc3, velo, theta, etho, xPos, yPos]
     for kindex, key in enumerate(['CMSVelocity', 'Eigenworm1', 'Eigenworm2', \
     'Eigenworm3',\

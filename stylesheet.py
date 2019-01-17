@@ -17,7 +17,7 @@ from scipy.ndimage.filters import gaussian_filter1d
 #
 ################################################
 mpl.rc('font', **{'sans-serif' : 'FiraSans','family' : 'sans-serif'})
-mpl.rc('text.latex', preamble='\usepackage{sfmath}')
+mpl.rc('text.latex', preamble=r'\usepackage{sfmath}')
 mpl.rcParams['image.cmap'] = 'viridis'
 
 axescolor = 'k'
@@ -125,7 +125,7 @@ def cleanAxes(ax, where='all'):
         ax.spines['left'].set_visible(False)
         ax.set_yticks([])
     else:
-        print 'Command not found. Use "x" or "y" or "all"'
+        print('Command not found. Use "x" or "y" or "all"')
     
     
 def alignAxes(ax1, ax2, where='x'):
@@ -161,7 +161,7 @@ def alignAxes(ax1, ax2, where='x'):
         ax2.set_position(mpl.transforms.Bbox(pos))
         
     else:
-        print 'specify alignment, either enter "x" or "y"'
+        print('specify alignment, either enter "x" or "y"')
     
 #=============================================================================#
 #                           plot normal plots

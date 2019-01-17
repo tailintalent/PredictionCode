@@ -40,19 +40,19 @@ def splitIntoSets(y, nBins=5, nSets=5, splitMethod='auto', verbose=0):
     yLimits = np.array([np.min(y),np.max(y)])
     #yLimits = np.percentile(y, [2.28, 97.72])#
     if verbose >= 1:
-        print 'Min and max y: ', yLimits
-        print 'Len(y): ', len(y)
+        print('Min and max y: ', yLimits)
+        print('Len(y): ', len(y))
 
     # Calculate bin edges and number of events in each bin
     nCounts,binEdges = np.histogram(y,nBins,yLimits)
     if  verbose >= 2:
-        print 'Bin edges: ', binEdges
-        print 'Counts: ', nCounts
+        print('Bin edges: ', binEdges)
+        print('Counts: ', nCounts)
 
     # Get minimum and maximum number of events in bins
     nCountsLimits = np.array([np.min(nCounts),np.max(nCounts)])
     if verbose >= 1:
-        print 'Min and max counts: ', nCountsLimits
+        print('Min and max counts: ', nCountsLimits)
 
     # Determine bin index for each individual event
     # Digitize is semi-open, i.e. slightly increase upper limit
@@ -82,8 +82,8 @@ def splitIntoSets(y, nBins=5, nSets=5, splitMethod='auto', verbose=0):
     else: nPerBin = nCountsLimits[0]/nSets
 
     if verbose >= 1:
-        print 'Split method: ', splitMethod
-        print 'Events per bin per set: ', nPerBin
+        print('Split method: ', splitMethod)
+        print('Events per bin per set: ', nPerBin)
 
     # Create subsets
     sets = [[] for i in range(nSets)]
@@ -161,7 +161,7 @@ def createTrainingTestIndices(data, pars, label):
         # this is the amount of data that will be left in each bin after equalization
         #N = np.sum(hist)/20.#hist[0]+hist[-1]
         N = np.max(hist)/2#*nbin
-        print bins, np.min(data['Behavior'][label]), np.max(data['Behavior'][label])
+        print(bins, np.min(data['Behavior'][label]), np.max(data['Behavior'][label]))
         # digitize data 
         dataProb = np.digitize(data['Behavior'][label], bins=bins[:-2], right=True)
         # rescale such that we get desired trainingset length
@@ -178,7 +178,7 @@ def createTrainingTestIndices(data, pars, label):
                     if counter[n] <= N:
                         trainingsIndices.append(index)
                         counter[n] +=1
-        print len(trainingsIndices)/1.0/timeLen, len(testIndices)/1.0/timeLen
+        print(len(trainingsIndices)/1.0/timeLen, len(testIndices)/1.0/timeLen)
         plt.hist(data['Behavior'][label], normed=True,bins=nbin )
         plt.hist(data['Behavior'][label][trainingsIndices], normed=True, alpha=0.5, bins=nbin)
         plt.show()
@@ -359,7 +359,7 @@ def rankCorrPCA(results):
 def behaviorCorrelations(data, behaviors, subset = None):
     """simple r2 scores of behavior and neural activity."""
     Y = np.copy(data['Neurons']['Activity'])
-    print Y.shape
+    print(Y.shape)
     nNeur = Y.shape[0]
     results = {}
     
@@ -367,7 +367,7 @@ def behaviorCorrelations(data, behaviors, subset = None):
         r2s = []
         x = data['Behavior'][beh]
         if subset is not None:
-            print max(subset), Y.shape
+            print(max(subset), Y.shape)
             Y = Y[:,subset]
             x = x[subset]
         x = (x-np.mean(x))/np.std(x)
@@ -393,7 +393,7 @@ def PCACorrelations(data,results, behaviors, flag = 'PCA', subset = None):
         r2s = []
         x = data['Behavior'][beh]
         if subset is not None:
-            print max(subset), Y.shape
+            print(max(subset), Y.shape)
             Y = Y[:,subset]
             x = x[subset]
         x = (x-np.mean(x))/np.std(x)
@@ -495,7 +495,7 @@ def discreteBehaviorPrediction(data, pars, splits):
     lin_clf.fit(X[trainingsInd], Y[trainingsInd]) 
     Ypred = lin_clf.predict(X[testInd])
     
-    print classification_report(Y[testInd], Ypred)
+    print(classification_report(Y[testInd], Ypred))
     pcs = lin_clf.coef_
     indices = np.argsort(pcs[0])
     
@@ -505,7 +505,7 @@ def discreteBehaviorPrediction(data, pars, splits):
         comp[wi] = np.dot(X, weights)
     #print f1_score(Y[testInd], Ypred, average='micro')
     recision, recall, fscore, support = precision_recall_fscore_support(Y[testInd], Ypred, labels=[-1,0,1,2])
-    print fscore
+    print(fscore)
     pcares = {}
     pcares['nComp'] =  4
     pcares['expVariance'] =  fscore
@@ -582,7 +582,7 @@ def runLinearModel(data, results, pars, splits, plot = False, behaviors = ['Angl
         if subset is not None:
             # only a few neurons
             if len(subset[label])<1:
-                print 'no weights found.proceeding with all neurons'
+                print('no weights found.proceeding with all neurons')
             else:
                 X = X[:,subset[label]]
 #        cv = 10
@@ -648,7 +648,7 @@ def runLinearModel(data, results, pars, splits, plot = False, behaviors = ['Angl
         linData[label]['scorepredicted'] = scorepred
         linData[label]['noNeurons'] = len(reg.coef_[np.abs(reg.coef_)>0])
         linData[label]['output'] = reg.predict(X) # full output training and test
-        print 'r2', scorepred
+        print('r2', scorepred)
     return linData
 
 
@@ -771,7 +771,7 @@ def runLassoLars(data, pars, splits, plot = False, behaviors = ['AngleVelocity',
             linData[label]['output'] = scalerY.inverse_transform(reg.predict(X)) # full output training and test
         else:
             linData[label]['output'] = reg.predict(X)
-        print 'alpha', alphaNew, 'r2', scorepred
+        print('alpha', alphaNew, 'r2', scorepred)
     return linData
 
 ###############################################    
@@ -919,7 +919,7 @@ def runLasso(data, pars, splits, plot = False, behaviors = ['AngleVelocity', 'Ei
             linData[label]['output'] = scalerY.inverse_transform(reg.predict(X)) # full output training and test
         else:
             linData[label]['output'] = reg.predict(X)
-        print 'alpha', alphaNew, 'r2', scorepred
+        print('alpha', alphaNew, 'r2', scorepred)
     return linData
     
 ###############################################    
@@ -1004,13 +1004,13 @@ def runElasticNet(data, pars, splits, plot = False, scramble = False, behaviors 
         linData[label]['score'] = score
         linData[label]['scorepredicted'] = scorepred
         linData[label]['noNeurons'] = len(reg.coef_[np.abs(reg.coef_)>0])
-        print 'R2', scorepred, 'N', len(reg.coef_[np.abs(reg.coef_)>0])
+        print('R2', scorepred, 'N', len(reg.coef_[np.abs(reg.coef_)>0]))
         if scale:
             linData[label]['output'] = scalerY.inverse_transform(reg.predict(X)) # full output training and test
         else:
             linData[label]['output'] = reg.predict(X)
         if plot:
-            print 'alpha', reg.alpha_, 'l1_ratio', reg.l1_ratio_, 'r2', scorepred
+            print('alpha', reg.alpha_, 'l1_ratio', reg.l1_ratio_, 'r2', scorepred)
             
             plt.subplot(221)
             plt.title('Trainingsset')
@@ -1187,9 +1187,9 @@ def scoreModelProgression(data, results, splits, pars, fitmethod = 'LASSO', beha
         indScore = []
         sumScore = []
         mse = []
-        print "___________________________"
-        print fitmethod, 'params:', results[fitmethod][label]['alpha']
-        print fitmethod, 'R2:', results[fitmethod][label]['scorepredicted'], results[fitmethod][label]['score']
+        print("___________________________")
+        print(fitmethod, 'params:', results[fitmethod][label]['alpha'])
+        print(fitmethod, 'R2:', results[fitmethod][label]['scorepredicted'], results[fitmethod][label]['score'])
 
         for count, wInd in enumerate(weightsInd):
             if np.abs(weights[wInd]) >0:
@@ -1203,14 +1203,15 @@ def scoreModelProgression(data, results, splits, pars, fitmethod = 'LASSO', beha
                 #reg = linear_model.LinearRegression()
                 
                 xTmp = np.reshape(X[:,weightsInd[:count+1]], (-1,count+1))
-                reg.fit(xTmp[trainingsInd], Y[trainingsInd])
+                reg.fit(xTmp[trainingsInd], np.array(list(Y))[trainingsInd])
+                    
                 
-                sumScore.append(reg.score(xTmp[testInd], Y[testInd]))
-                mse.append(np.sum((reg.predict(xTmp[testInd])-Y[testInd])**2))
+                sumScore.append(reg.score(xTmp[testInd], np.array(list(Y))[testInd]))
+                mse.append(np.sum((reg.predict(xTmp[testInd])-np.array(list(Y))[testInd])**2))
                 
                 xTmp = np.reshape(X[:,wInd], (-1,1))
-                reg.fit(xTmp[trainingsInd], Y[trainingsInd])
-                indScore.append(reg.score(xTmp[testInd], Y[testInd]))
+                reg.fit(xTmp[trainingsInd], np.array(list(Y))[trainingsInd])
+                indScore.append(reg.score(xTmp[testInd], np.array(list(Y))[testInd]))
                 
         linData[label] = {}
         linData[label]['cumulativeScore'] = sumScore
@@ -1299,11 +1300,11 @@ def predictNeuralDynamicsfromBehavior(data,  splits, pars):
     
     # some fit diagnostics
 #    for i in range(nComp):
-    print 'Train R2: ', lin.score(behavior[train],pcs[train])
-    print 'Test R2: ', lin.score(behavior[test],pcs[test])
+    print('Train R2: ', lin.score(behavior[train],pcs[train]))
+    print('Test R2: ', lin.score(behavior[test],pcs[test]))
     # recreate the PCA components of the neural map from these predictions
     predN = lin.predict(behavior)
-    print predN.shape, 'predicted neurons in pca space', behavior.shape
+    print(predN.shape, 'predicted neurons in pca space', behavior.shape)
     
     indices = np.argsort(explained_variance_score(pcs[test],predN[test],multioutput ='raw_values'))[::-1]
     r2 = [explained_variance_score(pcs[test,i], predN[test,i]) for i in indices]    
@@ -1323,7 +1324,7 @@ def predictNeuralDynamicsfromBehavior(data,  splits, pars):
         # compare to full neural data
         #expScore.append(explained_variance_score(data['Neurons']['Activity'][test], tmpHM[test]))
         # compare to nComp recornstructed data
-        print pca.inverse_transform(pcs).shape, tmpHM.shape
+        print(pca.inverse_transform(pcs).shape, tmpHM.shape)
         expScore.append(explained_variance_score(pca.inverse_transform(pcs)[test], tmpHM[test]))
     # store results
     pcares = {}
@@ -1370,9 +1371,9 @@ def predictBehaviorFromPCA(data,  splits, pars, behaviors):
         
         score = lin.score(pcs[train],behavior[train])
         scorepred = lin.score(pcs[test], behavior[test])
-        print 'PCA prediction results:'
-        print 'Train R2: ',score 
-        print 'Test R2: ', scorepred
+        print('PCA prediction results:')
+        print('Train R2: ',score )
+        print('Test R2: ', scorepred)
         linData[label] = {}
         linData[label]['weights'] =  lin.coef_
         linData[label]['intercepts'] = lin.intercept_

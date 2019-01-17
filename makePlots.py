@@ -44,7 +44,7 @@ mpl.rcParams["axes.labelsize"]=  10
 mpl.rcParams["xtick.labelsize"]=  10
 mpl.rcParams["ytick.labelsize"]=  10
 mpl.rc('font', **{'sans-serif' : 'FiraSans','family' : 'sans-serif'})
-mpl.rc('text.latex', preamble='\usepackage{sfmath}')
+mpl.rc('text.latex', preamble=r'\usepackage{sfmath}')
 plt.rcParams['image.cmap'] = 'viridis'
 
 #=============================================================================#
@@ -389,7 +389,7 @@ def plotEthogram(ax, T, etho, alpha = 0.5, yValMax=1, yValMin=0, legend=0):
     
 def plotExampleCenterlines(dataSets, keyList, folder)  :
     """plot a few centerlines from different behaviors."""
-    print 'plot centerline'
+    print('plot centerline')
     nWorms = len(keyList)
     fig = plt.figure('Centerlines',(10, nWorms*3.4))
     gs = gridspec.GridSpec(nWorms, 10)
@@ -408,7 +408,7 @@ def plotExampleCenterlines(dataSets, keyList, folder)  :
     
 def plotBehaviorAverages(dataSets, keyList)  :
     """plot the mean calcium signal given a behavior."""
-    print 'plot BTA'
+    print('plot BTA')
     nWorms = len(keyList)
     fig = plt.figure('BehaviorAverage',(7, nWorms*3.4))
     gs = gridspec.GridSpec(4, nWorms)
@@ -436,7 +436,7 @@ def plotBehaviorAverages(dataSets, keyList)  :
             
 def plotBehaviorOrderedNeurons(dataSets, keyList, behaviors):
     """plot the neural data as ordered by behaviors."""
-    print 'plot neurons ordered by behavior'
+    print('plot neurons ordered by behavior')
     nWorms = len(keyList)
     fig = plt.figure('BehaviorOrdered Neurons',(12, nWorms*3.4))
     gs = gridspec.GridSpec(nWorms,1)
@@ -479,7 +479,7 @@ def plotBehaviorOrderedNeurons(dataSets, keyList, behaviors):
             
 def plotBehaviorNeuronCorrs(dataSets, keyList, behaviors):
     """plot the neural data as ordered by behaviors."""
-    print 'plot neurons behavior correlations.'
+    print('plot neurons behavior correlations.')
     #gs = gridspec.GridSpec(nWorms, 1)
     for dindex, key in enumerate(keyList):
         fig = plt.figure('Behavior correlates Neurons {}'.format(dindex),(12, 12))
@@ -580,7 +580,7 @@ def neuralActivity(dataSets, keyList):
     gs = gridspec.GridSpec(nWorms, 1)
     
     for dindex, key in enumerate(keyList):
-        print 'Plotting lines ', key
+        print('Plotting lines ', key)
         
         data = dataSets[key]
         time = data['Neurons']['Time']
@@ -605,7 +605,7 @@ def plotDataOverview(dataSets, keyList):
     gs = gridspec.GridSpec(nWorms*2, 4,
                            width_ratios=[1,0.1, 2, 1])
     for dindex, key in enumerate(keyList):
-        print 'Plotting overview of ', key
+        print('Plotting overview of ', key)
         
         data = dataSets[key]
         ax = plt.subplot(gs[2*dindex:2*dindex+2,0])
@@ -642,7 +642,7 @@ def plotDataOverview2(dataSets, keyList, resultDict):
     fig = plt.figure('Overview',(10, nWorms*6.8))
     gs = gridspec.GridSpec(nWorms*4,2, width_ratios=[1,0.1], height_ratios=np.tile([2,0.5,1,1],nWorms))
     for dindex, key in enumerate(keyList):
-        print 'Plotting overview of ', key
+        print('Plotting overview of ', key)
         order =  resultDict[key]['PCA']['neuronOrderPCA']
         data = dataSets[key]
         ax = plt.subplot(gs[4*dindex, 0])
@@ -813,7 +813,7 @@ def plotPCAresults(dataSets, resultSet, keyList, pars, flag = 'PCA',testset=None
 def plotPCAresults3D(dataSets, resultSet, keyList,pars,  col = 'phase', flag = 'PCA', smooth = 12, colorBy=None):
     """Show neural manifold with behavior label."""
     nWorms = len(keyList)
-    print 'colored by ', col
+    print('colored by ', col)
     fig2 = plt.figure('{} projections'.format(flag),(6.8, nWorms*3.4))
     fig3 = plt.figure('{} temporal'.format(flag),(6.8, nWorms*3.4))
     fig1 = plt.figure('{} manifold'.format(flag),(6.8, nWorms*3.4))
@@ -1254,7 +1254,7 @@ def averageResultsLinear(resultSets1,resultSets2, keyList1, keyList2, fitmethod 
         resultSets = resultSetsAll[i]
         # plot paired R2 results for multiple neurons
         for lindex, label in enumerate(behaviors):
-            print [np.concatenate([resultSets[key][fitmethod][label]['individualScore']]) for key in keyList]
+            print([np.concatenate([resultSets[key][fitmethod][label]['individualScore']]) for key in keyList])
             
             r2s = [[np.max(np.concatenate([resultSets[key][fitmethod][label]['individualScore']])), resultSets[key][fitmethod][label]['cumulativeScore'][-1]] for key in keyList if len(resultSets[key][fitmethod][label]['individualScore'])>0]
             r2s =np.array(r2s)
@@ -1270,7 +1270,7 @@ def averageResultsLinear(resultSets1,resultSets2, keyList1, keyList2, fitmethod 
             ax1.set_xticklabels(['best single neuron', 'group of neurons'],  rotation=30)
             
         Ns = np.array([np.array([resultSets[key][fitmethod][label]['noNeurons'] for label in behaviors]) for key in keyList])
-        print Ns.shape
+        print(Ns.shape)
         colors = np.array([colorBeh[label] for label in behaviors])
         labels = np.array([names[label] for label in behaviors])
         

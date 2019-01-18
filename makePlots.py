@@ -1223,7 +1223,7 @@ def scatterSingleLinearFit(fig, gridloc, pars, results, data, splits, behaviors)
         #    yTest = yPred
         # plot training and test set behavior and prediction
         ax1 = plt.Subplot(fig, inner_grid[lindex, 0])
-        ax1.scatter(y[testInd], yTest[testInd])
+        ax1.scatter(np.array(list(y))[testInd], yTest[testInd])
         
         fig.add_subplot(ax1)        
 
